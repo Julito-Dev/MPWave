@@ -1,0 +1,43 @@
+import os
+import sys
+import subprocess
+
+
+def get_route_ffmpeg():
+    
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, "ffmpeg.exe")
+
+
+def convert(in_route, exit_format):
+    
+    exit = os.path.splitext(in_route)[1].lower()
+    
+    if exit not in(".mp3", ".wav"):
+        raise ValueError("Entrace Format Not Supported")
+    
+    exit_route = os.path.splitext(in_route)[0] + f".{exit_format}"
+    ffmpeg_path = get_route_ffmpeg()
+    
+    command = [
+        ffmpeg_path,
+        "-y",
+        "-i", in_route,
+        exit_route
+    ]
+    
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        creationflags= subprocess.CREATE_NO_WINDOW
+        
+    )
+    
+    if result.returncode != 0:
+        raise RuntimeError(f"Error of ffmpeg:\n{result.stderr} ")
+
+    return exit_route
