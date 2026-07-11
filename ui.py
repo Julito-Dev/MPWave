@@ -56,10 +56,35 @@ class ConvertApp:
 
         exit = os.path.splitext(self.file_route)[1].lower()
         exit_format = "wav" if exit == ".mp3" else "mp3"
-            
-        try:
-            result_route = convert(self.file_route, exit_format)
-            messagebox.showinfo("Finished", f"Converted: {result_route}")
         
+        self._set_loading_state(True)
+        
+        thread = threading.Thread(target=self._run_conversion, args=(exit_format,))
+        thread.start()
+           
+           
+    def _run_conversion(self, exit_format):
+        try:
+            result_route = convert(self.file_route, exit_format, self.output_folder)
+            self.root.after(0, self._on_success, result_route)
         except Exception as e:
-            messagebox.showerror("Error", str(e))
+            self.root.after(0, self._on_error, str(e))
+
+    def _on_success(self, result_route):
+        self._set_loading_state(False)
+        messagebox.showinfo("Finished", f"Converted: {result_route}")
+            
+    def _on_error(self, error_msg):
+        self._set_loading_state(False)
+        messagebox.showerror("Error", error_msg)
+        
+    def _set_loading_state(self, loading):
+        if loading:
+            self.convert_button.configure(state="disabled", text="Converting...")
+            self.progress_bar.pack(pady=10)
+            self.progress_bar.start()
+            
+        else:
+            self.progress_bar.stop()
+            self.progress_bar.pack_forget()
+            self.convert_button.configure(state="normal", text="Convert")
