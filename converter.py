@@ -12,14 +12,20 @@ def get_route_ffmpeg():
     return os.path.join(base_path, "ffmpeg.exe")
 
 
-def convert(in_route, exit_format):
+def convert(in_route, exit_format, output_folder = None):
     
     exit = os.path.splitext(in_route)[1].lower()
     
     if exit not in(".mp3", ".wav"):
         raise ValueError("Entrace Format Not Supported")
     
-    exit_route = os.path.splitext(in_route)[0] + f".{exit_format}"
+    filename = os.path.splitext(os.path.basename(in_route))[0]
+    
+    if output_folder:
+        exit_route = os.path.join(output_folder, f"{filename}.{exit_format}")
+    else:
+        exit_route = os.path.splitext(in_route)[0] + f".{exit_format}"   
+        
     ffmpeg_path = get_route_ffmpeg()
     
     command = [
