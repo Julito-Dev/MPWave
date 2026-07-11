@@ -1,0 +1,17 @@
+# FFmpeg binary (GPLv3, ~80MB) - download separately, see README
+ffmpeg.exe
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
