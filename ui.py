@@ -12,32 +12,55 @@ ctk.set_default_color_theme("blue")
 class ConvertApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Conversor MP3 <-> WAV")
+        self.root.title("Multimedia Conversor")
         self.file_route = None
         self.output_folder = None
         self._buildUI()
         
         
     def _buildUI(self):
-        self.label_file = ctk.CTkLabel(self.root, text="No file Selected")
-        self.label_file.pack(pady = 10)
+        self.root.columnconfigure(0,weight=1)
+        self.root.columnconfigure(1, weight=1)
+        self.root.rowconfigure(0, weight=1)
         
-        ctk.CTkButton(self.root, text="Select File", command=self.select_file).pack(pady=5)
-        self.label_folder = ctk.CTkLabel(self.root, text="Destination: same as file")
+        
+        #LEFT FRAME: INPUT
+        
+        self.left_frame = ctk.CTkFrame(self.root)
+        self.left_frame.grid(row= 0, column= 0, padx= 10, pady=10, sticky="nsew")
+        
+        ctk.CTkLabel(self.left_frame, text= "Input", font=("", 16, "bold")).pack(pady=10)
+        self.label_file = ctk.CTkLabel(self.left_frame, text="No file Selected")
+        self.label_file.pack(pady = 10)
+        ctk.CTkButton(self.left_frame, text="Select File", command=self.select_file).pack(pady=5)
+        
+        
+        
+        #RIGHT FRAME: OUTPUT
+        self.right_frame = ctk.CTkFrame(self.root)
+        self.right_frame.grid(row=0, column = 1, padx=10, pady=10, sticky="nsew")
+        
+        ctk.CTkLabel(self.right_frame, text= "Output", font=("", 16, "bold")).pack(pady=(15,5))
+        
+        self.label_folder = ctk.CTkLabel(self.right_frame, text="Destination: same as input file")
         self.label_folder.pack(pady=10)
         
         
-        ctk.CTkButton(self.root, text="Select destination Folder", command=self.select_folder).pack(pady=5)
+        
+        ctk.CTkButton(self.right_frame, text="Select destination Folder", command=self.select_folder).pack(pady=5)
+        
+        self.format_menu = ctk.CTkOptionMenu(self.right_frame, values=["wav","mp3"])
+        self.format_menu.pack()
+        
+        #Convert button and loading bar
         
         self.convert_button = ctk.CTkButton(self.root, text="Convert", command=self.convert_file)
-        self.convert_button.pack(pady=10)
-
+        self.convert_button.grid(row=0, column=0, columnspan= 2, pady=10, padx=(5,10), sticky="ew")
+        
         self.progress_bar = ctk.CTkProgressBar(self.root, mode="indeterminate")
-        
-        
-        
+    
     def select_file(self):
-        route = filedialog.askopenfilename(filetypes=[("Audio", "*.mp3 *.wav")])
+        route = filedialog.askopenfilename(filetypes=[("Audio", "*.mp3 *.wav"), ("Video", "*.mp4")])
         if route:
             self.file_route = route
             self.label_file.configure(text=os.path.basename(route))
