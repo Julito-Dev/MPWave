@@ -2,6 +2,11 @@ import os
 import sys
 import subprocess
 
+SUPPORTED_FORMATS = {
+    ".mp3" : "audio",
+    ".wav" : "audio",
+    ".mp4" : "video",
+    }
 
 def get_route_ffmpeg():
     
@@ -16,8 +21,8 @@ def convert(in_route, exit_format, output_folder = None):
     
     exit = os.path.splitext(in_route)[1].lower()
     
-    if exit not in(".mp3", ".wav"):
-        raise ValueError("Entrace Format Not Supported")
+    if exit not in SUPPORTED_FORMATS:
+        raise ValueError(f"Input Format ' {exit} ' Not Supported")
     
     filename = os.path.splitext(os.path.basename(in_route))[0]
     
@@ -34,6 +39,11 @@ def convert(in_route, exit_format, output_folder = None):
         "-i", in_route,
         exit_route
     ]
+    
+    input_type = SUPPORTED_FORMATS[exit]
+    if input_type == "video":
+        command.append("-vn")
+    
     
     result = subprocess.run(
         command,
