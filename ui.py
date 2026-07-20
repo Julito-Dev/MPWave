@@ -21,7 +21,11 @@ class ConvertApp:
     def _buildUI(self):
         self.root.columnconfigure(0,weight=1)
         self.root.columnconfigure(1, weight=1)
+        
         self.root.rowconfigure(0, weight=1)
+        self.root.rowconfigure(1, weight=0)
+        self.root.rowconfigure(2, weight = 0)
+    
         
         
         #LEFT FRAME: INPUT
@@ -55,10 +59,12 @@ class ConvertApp:
         #Convert button and loading bar
         
         self.convert_button = ctk.CTkButton(self.root, text="Convert", command=self.convert_file)
-        self.convert_button.grid(row=0, column=0, columnspan= 2, pady=10, padx=(5,10), sticky="ew")
+        self.convert_button.grid(row=1, column=0, columnspan= 2, pady=10, padx=(5,10), sticky="ew")
         
         self.progress_bar = ctk.CTkProgressBar(self.root, mode="indeterminate")
-    
+        self.progress_bar.grid(row = 2, column = 0, columnspan=2, padx=10, pady=(0,10), sticky="ew")
+        self.progress_bar.grid_remove()
+        
     def select_file(self):
         route = filedialog.askopenfilename(filetypes=[("Audio", "*.mp3 *.wav"), ("Video", "*.mp4")])
         if route:
@@ -78,7 +84,7 @@ class ConvertApp:
             return
 
         exit = os.path.splitext(self.file_route)[1].lower()
-        exit_format = "wav" if exit == ".mp3" else "mp3"
+        exit_format = self.format_menu.get()
         
         self._set_loading_state(True)
         
@@ -104,10 +110,10 @@ class ConvertApp:
     def _set_loading_state(self, loading):
         if loading:
             self.convert_button.configure(state="disabled", text="Converting...")
-            self.progress_bar.pack(pady=10)
+            self.progress_bar.grid()
             self.progress_bar.start()
             
         else:
             self.progress_bar.stop()
-            self.progress_bar.pack_forget()
+            self.progress_bar.grid_remove()
             self.convert_button.configure(state="normal", text="Convert")
