@@ -37,13 +37,13 @@ def convert(in_route, exit_format, output_folder = None):
         ffmpeg_path,
         "-y",
         "-i", in_route,
-        exit_route
     ]
     
     input_type = SUPPORTED_FORMATS[exit]
     if input_type == "video":
         command.append("-vn")
     
+    command.append(exit_route)
     
     result = subprocess.run(
         command,
