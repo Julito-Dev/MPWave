@@ -1,18 +1,21 @@
 # MPWave
 
-A lightweight desktop app to convert audio files between **MP3** and **WAV** formats, built with Python, [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter), and [FFmpeg](https://ffmpeg.org/).
+A lightweight desktop app to convert multimedia files between **MP3**, **WAV**, and **MP4** (audio extraction), built with Python, [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter), and [FFmpeg](https://ffmpeg.org/).
 
 ## Features
 
-- Bidirectional conversion: MP3 → WAV and WAV → MP3 (auto-detected from the input file)
-- Modern UI built with CustomTkinter (native dark/light mode support)
+- Multi-format conversion: MP3 ↔ WAV, and MP4 → audio (extracts the audio track, discarding video)
+- Explicit output format selection via dropdown — no more guesswork on what you'll get
+- Modern UI built with CustomTkinter (native dark/light mode support), split into **Input** and **Output** panels for a clearer workflow
 - Custom output folder selection (defaults to the source file's folder if none is chosen)
 - Non-blocking conversion using threading, so the UI stays responsive
 - Packaged as a standalone `.exe` — no Python or FFmpeg installation required on the user's end
 
 ## How It Works
 
-MPWave uses **FFmpeg** under the hood (via `subprocess`) to handle the actual audio decoding/encoding, wrapped in a simple CustomTkinter interface. The conversion runs on a background thread to avoid freezing the UI, with a progress indicator shown while the file is processed.
+MPWave uses **FFmpeg** under the hood (via `subprocess`) to handle the actual encoding/decoding, wrapped in a simple CustomTkinter interface. When the input is a video container (like MP4), FFmpeg is called with the `-vn` flag to strip the video stream and keep only the audio. The conversion runs on a background thread to avoid freezing the UI, with a progress indicator shown while the file is processed.
+
+Supported formats are declared in a simple lookup table in `converter.py`, so adding a new format (e.g. FLAC, AAC, MOV) is a matter of extending that table rather than rewriting the conversion logic.
 
 ## Project Structure
 
@@ -50,9 +53,9 @@ FFmpeg is called directly via `subprocess`, so no additional Python audio librar
 python main.py
 ```
 
-1. Click **Select File** and choose an `.mp3` or `.wav` file.
-2. (Optional) Click **Select Destination Folder** to choose where the converted file will be saved.
-3. Click **Convert**. The app automatically converts to the opposite format.
+1. On the **left panel (Input)**, click **Select File** and choose an `.mp3`, `.wav`, or `.mp4` file.
+2. On the **right panel (Output)**, pick the desired output format from the dropdown, and optionally click **Select Destination Folder** to choose where the converted file will be saved.
+3. Click **Convert**.
 
 ## Building the Executable
 
@@ -68,7 +71,7 @@ The resulting executable will be located in the `dist/` folder and can be shared
 ## Notes
 
 - Some antivirus software may flag PyInstaller-built executables as a false positive — this is a known behavior of the packaging tool, not a sign of malicious code.
-- Currently supports MP3 and WAV formats only.
+- Currently supports MP3, WAV, and MP4 (audio extraction only — no video-to-video conversion) as input formats.
 
 ## Author
 
